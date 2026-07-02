@@ -14,14 +14,19 @@ class Settings(BaseSettings):
     """
 
     APP_NAME: str = "MailPilot"
-
     APP_VERSION: str = "0.1.0"
-
     DEBUG: bool = True
-
     HOST: str = "0.0.0.0"
-
     PORT: int = 8000
+
+    # Google OAuth
+    # GOOGLE_CLIENT_ID: str
+    # GOOGLE_CLIENT_SECRET: str
+    # GOOGLE_AUTH_URI: str
+    # GOOGLE_TOKEN_URI: str
+    GOOGLE_CREDENTIALS_FILE: str
+    GOOGLE_REDIRECT_URI: str
+    GOOGLE_SCOPES: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

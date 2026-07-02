@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from src.api.middleware import log_requests
 from src.api.routers.health import router as health_router
+from src.api.routers.auth import router as auth_router
 from src.core.config import settings
 from src.core.logging import setup_logging
 
@@ -22,5 +23,6 @@ def create_app() -> FastAPI:
     app.middleware("http")(log_requests)
 
     app.include_router(health_router)
+    app.include_router(auth_router)
 
     return app
