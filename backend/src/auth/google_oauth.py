@@ -3,12 +3,13 @@ Google OAuth service.
 """
 
 from google_auth_oauthlib.flow import Flow
+from google.oauth2.credentials import Credentials
 
 from src.core.config import settings
-import logging
+from src.models.auth import AuthorizationRequest
 
 
-class GoogleOAuth:
+class GoogleOAuthService:
     """
     Handles Google OAuth authentication.
     """
@@ -16,34 +17,17 @@ class GoogleOAuth:
     def __init__(self):
 
         self.scopes = [scope.strip() for scope in settings.GOOGLE_SCOPES.split(",")]
-
-    # def create_flow(self) -> Flow:
-    #     """
-    #     Create OAuth Flow.
-    #     """
-
-    #     return Flow.from_client_config(
-    #         {
-    #             "web": {
-    #                 "client_id": settings.GOOGLE_CLIENT_ID,
-    #                 "client_secret": settings.GOOGLE_CLIENT_SECRET,
-    #                 "auth_uri": settings.GOOGLE_AUTH_URI,
-    #                 "token_uri": settings.GOOGLE_TOKEN_URI,
-    #                 "redirect_uris": [settings.GOOGLE_REDIRECT_URI],
-    #             }
-    #         },
-    #         scopes=self.scopes,
-    #     )
+        # print("Google Self Scopes:", self.scopes)
 
     def create_flow(self) -> Flow:
         """
         Create Google OAuth Flow.
         """
 
-        logging.debug("Log Credentials: ", settings.GOOGLE_CREDENTIALS_FILE)
         flow = Flow.from_client_secrets_file(
-            settings.GOOGLE_CREDENTIALS_FILE,
+            client_secrets_file=settings.GOOGLE_CREDENTIALS_FILE,
             scopes=self.scopes,
+            autogenerate_code_verifier=True,
         )
 
         flow.redirect_uri = settings.GOOGLE_REDIRECT_URI
@@ -63,4 +47,22 @@ class GoogleOAuth:
             prompt="consent",
         )
 
-        return authorization_url, state
+        return AuthorizationRequest(
+            url=authorization_url,
+            state=state,
+            code_verifier=flow.code_verifier,
+        )
+
+    def exchange_code(
+        self,
+        code: str,
+        code_verifier: str,
+    ) -> Credentials:
+
+        flow = self.create_flow()
+
+        flow.code_verifier = code_verifier
+
+        flow.fetch_token(code=code)
+
+        return flow.credentials

@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from src.auth.google_oauth import GoogleOAuth
+from src.auth.services.google_oauth import GoogleOAuth
 from src.core.config import settings
 
 from .base_validator import BaseValidator
