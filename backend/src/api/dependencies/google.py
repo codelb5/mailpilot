@@ -8,7 +8,6 @@ def get_google_oauth():
     return GoogleOAuthService()
 
 
-def get_google_user_service() -> GoogleUserService:
+def get_google_user_client() -> GoogleUserClient:
 
-    client = GoogleUserClient()
-    return GoogleUserService(client)
+    return GoogleUserClient()

@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     GOOGLE_REDIRECT_URI: str
     GOOGLE_SCOPES: str
 
+    # MongoDB URI
+    MONGODB_URI: str
+    MONGODB_DATABASE: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

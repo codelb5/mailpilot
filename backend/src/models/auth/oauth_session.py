@@ -3,7 +3,7 @@ OAuth Session model.
 """
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from uuid import uuid4
 
     
@@ -31,7 +31,7 @@ class OAuthSession:
         expires_in_minutes: int = 10,
     ) -> "OAuthSession":
 
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
 
         return cls(
             state=state,
@@ -43,4 +43,4 @@ class OAuthSession:
 
     @property
     def expired(self) -> bool:
-        return datetime.utcnow() > self.expires_at
+        return datetime.now(UTC) > self.expires_at

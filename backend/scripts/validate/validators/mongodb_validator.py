@@ -1,21 +1,24 @@
-from .base_validator import BaseValidator
+from src.database.mongodb import MongoManager
+
+from .async_base_validator import AsyncBaseValidator
 
 
-class MongoValidator(BaseValidator):
+class MongoDBValidator(AsyncBaseValidator):
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "MongoDB Validation"
 
-    def validate(self): ...
+    async def validate(self) -> None:
+        
+        self.step("Connecting to database..!")
 
-    # client = self.check(
-    #     "Create Mongo Client",
-    #     create_client,
-    # )
+        await MongoManager.connect()
 
-    # self.check(
-    #     "Ping Database",
-    #     client.admin.command,
-    #     "ping",
-    # )
+        db = MongoManager.get_database()
+
+        await db.command("ping")
+
+        self.success(f"Connected to database: {db.name}")
+
+        await MongoManager.disconnect()

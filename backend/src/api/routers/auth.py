@@ -3,15 +3,17 @@ from fastapi.responses import RedirectResponse
 
 from src.api.dependencies import (
     get_google_oauth,
-    get_google_user_service,
+    get_google_user_client,
     get_oauth_session_store,
+    get_user_service,
 )
 from src.auth.google_oauth import GoogleOAuthService
 from src.auth.oauth_session_store import OAuthSessionStore
 from src.models.auth import AuthorizationRequest
 from src.schemas.auth import AuthUser
 from src.schemas.common import ApiResponse
-from src.services.google_user_service import GoogleUserService
+from src.clients.google_user_client import GoogleUserClient
+from src.services.user_service import UserService
 
 router = APIRouter(
     prefix="/api/v1/auth",
@@ -43,7 +45,8 @@ async def callback(
     state: str | None = Query(None),
     oauth: GoogleOAuthService = Depends(get_google_oauth),
     oauth_session_store: OAuthSessionStore = Depends(get_oauth_session_store),
-    google_user: GoogleUserService = Depends(get_google_user_service),
+    google_user_client: GoogleUserClient = Depends(get_google_user_client),
+    user_service: UserService = Depends(get_user_service),
 ):
     """
     Google OAuth callback.
@@ -59,9 +62,15 @@ async def callback(
 
         oauth_session_store.delete(state=state)
 
-        profile = google_user.get_profile(credentials)
+        user_profile = google_user_client.get_profile(credentials=credentials)
 
-        return ApiResponse[AuthUser](message="Authentication Successful", data=profile)
+        user = user_service.sync_google_user(auth_user=user_profile)
+
+        
+
+        return ApiResponse[AuthUser](
+            message="Authentication Successful", data=user_profile
+        )
 
     except Exception as ex:
 
