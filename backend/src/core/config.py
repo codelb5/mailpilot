@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     MONGODB_URI: str
     MONGODB_DATABASE: str
 
+    # Crypto Key
+    CRYPTO_KEY: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

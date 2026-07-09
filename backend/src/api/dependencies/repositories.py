@@ -5,6 +5,7 @@ from src.api.dependencies.database import get_database
 from src.database.repositories.user_repository import (
     UserRepository,
 )
+from src.database.repositories.oauth_token_repository import OAuthTokenRepository
 
 
 def get_user_repository(
@@ -15,3 +16,15 @@ def get_user_repository(
     """
 
     return UserRepository(database)
+
+
+def get_oauth_token_repository(
+    database: AsyncIOMotorDatabase = Depends(
+        get_database,
+    ),
+) -> OAuthTokenRepository:
+    """
+    Returns OAuthTokenRepository.
+    """
+
+    return OAuthTokenRepository(database)
