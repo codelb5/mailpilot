@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from src.auth.google_oauth import GoogleOAuth
+from src.auth.google_oauth import GoogleOAuthService
 from src.core.config import settings
 
 from .base_validator import BaseValidator
@@ -110,7 +110,7 @@ class GoogleOAuthValidator(BaseValidator):
 
         self.oauth = self.check(
             "Initialize Google OAuth",
-            GoogleOAuth,
+            GoogleOAuthService,
         )
 
         self.flow = self.check(
