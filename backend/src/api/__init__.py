@@ -1,10 +1,26 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
 
 from src.api.middleware import log_requests
 from src.api.routers.health import router as health_router
 from src.api.routers.auth import router as auth_router
 from src.core.config import settings
 from src.core.logging import setup_logging
+from src.database.mongodb import MongoManager
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Manage application startup and shutdown.
+    """
+
+    await MongoManager.connect()
+
+    yield
+
+    await MongoManager.disconnect()
 
 
 def create_app() -> FastAPI:
@@ -18,6 +34,7 @@ def create_app() -> FastAPI:
         title=settings.APP_NAME,
         version=settings.APP_VERSION,
         debug=settings.DEBUG,
+        lifespan=lifespan,
     )
 
     app.middleware("http")(log_requests)

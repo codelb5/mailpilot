@@ -18,7 +18,7 @@ class User(DomainModel):
 
     display_name: str
 
-    profile_picture: HttpUrl | None = None
+    profile_picture: str | None = None
 
     email_verified: bool = False
 

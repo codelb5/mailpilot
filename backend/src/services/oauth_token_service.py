@@ -57,7 +57,7 @@ class OAuthTokenService:
 
         return OAuthToken.build(
             user_id=user.id,
-            access_token=self._encrypt(
+            access_token = self._encrypt(
                 credentials.token,
             ),
             refresh_token=self._encrypt(
