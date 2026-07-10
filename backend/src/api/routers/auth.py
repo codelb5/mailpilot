@@ -6,6 +6,7 @@ from src.api.dependencies import (
     get_google_user_client,
     get_oauth_session_store,
     get_user_service,
+    get_oauth_token_service,
 )
 from src.auth.google_oauth import GoogleOAuthService
 from src.auth.oauth_session_store import OAuthSessionStore
@@ -14,6 +15,7 @@ from src.schemas.auth import AuthUser
 from src.schemas.common import ApiResponse
 from src.clients.google_user_client import GoogleUserClient
 from src.services.user_service import UserService
+from src.services.oauth_token_service import OAuthTokenService
 
 router = APIRouter(
     prefix="/api/v1/auth",
@@ -47,6 +49,9 @@ async def callback(
     oauth_session_store: OAuthSessionStore = Depends(get_oauth_session_store),
     google_user_client: GoogleUserClient = Depends(get_google_user_client),
     user_service: UserService = Depends(get_user_service),
+    oauth_token_service: OAuthTokenService = Depends(
+        get_oauth_token_service,
+    ),
 ):
     """
     Google OAuth callback.
@@ -64,9 +69,12 @@ async def callback(
 
         user_profile = google_user_client.get_profile(credentials=credentials)
 
-        user = user_service.sync_google_user(auth_user=user_profile)
+        user = await user_service.sync_google_user(auth_user=user_profile)
 
-        
+        await oauth_token_service.save_google_credentials(
+            user=user,
+            credentials=credentials,
+        )
 
         return ApiResponse[AuthUser](
             message="Authentication Successful", data=user_profile

@@ -9,6 +9,8 @@ from .repositories import (
 )
 from .user import get_user_service
 
+from .services import get_oauth_token_service
+
 __all__ = [
     "get_google_oauth",
     "get_google_user_client",
@@ -16,4 +18,5 @@ __all__ = [
     "get_database",
     "get_user_repository",
     "get_user_service",
+    "get_oauth_token_service",
 ]
