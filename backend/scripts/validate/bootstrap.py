@@ -13,6 +13,7 @@ from src.services.security.encryption_service import EncryptionService
 from src.auth.google_oauth import GoogleOAuthService
 from src.services.oauth_token_service import OAuthTokenService
 from src.services.user_service import UserService
+from src.clients import GmailClient
 
 from .dependencies import Dependencies
 from .validators.async_base_validator import AsyncBaseValidator
@@ -66,6 +67,8 @@ def build_dependencies(manager: MongoManager) -> Dependencies:
         oauth=google_oauth_service,
     )
 
+    gmail_client = GmailClient()
+
     return Dependencies(
         database=database,
         user_repository=user_repository,
@@ -74,4 +77,5 @@ def build_dependencies(manager: MongoManager) -> Dependencies:
         google_oauth_service=google_oauth_service,
         user_service=user_service,
         oauth_token_service=oauth_token_service,
+        gmail_client=gmail_client,
     )

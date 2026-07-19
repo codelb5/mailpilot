@@ -14,6 +14,7 @@ from src.services.security.encryption_service import EncryptionService
 from src.auth.google_oauth import GoogleOAuthService
 from src.services.oauth_token_service import OAuthTokenService
 from src.services.user_service import UserService
+from src.clients import GmailClient
 
 
 @dataclass(slots=True)
@@ -41,3 +42,8 @@ class Dependencies:
     #
     user_service: UserService
     oauth_token_service: OAuthTokenService
+
+    #
+    # Client Services
+    #
+    gmail_client: GmailClient

@@ -1,27 +1,20 @@
-from abc import ABC, abstractmethod
+"""
+Base validator for asynchronous validation.
+"""
+
+from __future__ import annotations
+import traceback
+from abc import abstractmethod
 from time import perf_counter
-from typing import Any, Callable
-import asyncio
+from typing import Any, Awaitable, Callable
+
+from .validator_base import ValidatorBase
 
 
-class AsyncBaseValidator(ABC):
+class AsyncBaseValidator(ValidatorBase):
     """
-    Base class for all validators.
+    Base class for all asynchronous validators.
     """
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """
-        Display name of the validator.
-        """
-        ...
-
-    def step(self, message: str) -> None:
-        print(f"→ {message}")
-
-    def success(self, message: str) -> None:
-        print(f"✓ {message}")
 
     @abstractmethod
     async def validate(self) -> None:
@@ -30,65 +23,40 @@ class AsyncBaseValidator(ABC):
         """
         ...
 
-    # --------------------------------------------------
-    # Validation Helpers
-    # --------------------------------------------------
-
-    def check(
+    async def check_async(
         self,
         description: str,
-        func: Callable[..., Any],
+        func: Callable[..., Awaitable[Any]],
         *args,
         **kwargs,
     ) -> Any:
         """
-        Execute a validation step.
+        Execute an asynchronous validation step.
         """
 
         print(f"🔍 {description}")
 
         try:
-
-            result = func(*args, **kwargs)
+            result = await func(*args, **kwargs)
 
             print("   ✅ Passed\n")
 
             return result
 
         except Exception as ex:
-
             print("   ❌ Failed\n")
-
             raise RuntimeError(f"{description} failed.\n{ex}") from ex
 
-    def check_not_empty(
-        self,
-        description: str,
-        value: Any,
-    ) -> Any:
-        """
-        Ensure a configuration value exists.
-        """
-
-        print(f"🔍 {description}")
-
-        if value is None:
-            raise RuntimeError(f"{description} is None")
-
-        if isinstance(value, str) and not value.strip():
-            raise RuntimeError(f"{description} is empty")
-
-        print("   ✅ Passed\n")
-
-        return value
-
-    # --------------------------------------------------
+    # ==================================================
     # Runner
-    # --------------------------------------------------
+    # ==================================================
 
-    def run(self) -> bool:
+    async def run(self) -> bool:
+        """
+        Execute the validator.
+        """
 
-        print("\n")
+        print()
         print("=" * 80)
         print(self.name)
         print("=" * 80)
@@ -96,8 +64,7 @@ class AsyncBaseValidator(ABC):
         start = perf_counter()
 
         try:
-
-            asyncio.run(self.validate())
+            await self.validate()
 
             duration = (perf_counter() - start) * 1000
 
@@ -115,8 +82,11 @@ class AsyncBaseValidator(ABC):
             print("❌ Validation Failed")
             print("=" * 80)
 
-            print(ex)
+            # print(ex)
+            traceback.print_exc()
+            print()
+            print(repr(ex))
 
-            print(f"\nDuration : {duration:.2f} ms")
+            print(f"\nDuration: {duration:.2f} ms")
 
             return False

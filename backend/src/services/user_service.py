@@ -54,3 +54,13 @@ class UserService:
             raise RuntimeError("Failed to reload user after updating last login.")
 
         return updated_user
+
+    async def get_by_email(
+        self,
+        email: str,
+    ) -> User | None:
+        """Get a user by email"""
+
+        query = {"email": email}
+        
+        return await self._repository.find_one(query=query)
