@@ -5,6 +5,7 @@ All application settings should be defined here.
 Environment variables are loaded from the .env file.
 """
 
+from pydantic import EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -30,6 +31,9 @@ class Settings(BaseSettings):
 
     # Crypto Key
     CRYPTO_KEY: str
+
+    # Emaiil
+    VALIDATOR_GOOGLE_EMAIL: EmailStr
 
     model_config = SettingsConfigDict(
         env_file=".env",

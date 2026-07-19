@@ -5,6 +5,8 @@ OAuth Token service.
 # type.ignore
 from datetime import datetime
 from google.oauth2.credentials import Credentials
+from pprint import pprint
+
 
 from src.auth.google_oauth import GoogleOAuthService
 from src.database.repositories.oauth_token_repository import OAuthTokenRepository
@@ -57,7 +59,7 @@ class OAuthTokenService:
 
         return OAuthToken.build(
             user_id=user.id,
-            access_token = self._encrypt(
+            access_token=self._encrypt(
                 credentials.token,
             ),
             refresh_token=self._encrypt(
@@ -113,7 +115,9 @@ class OAuthTokenService:
             )
 
         query_obj = {"_id": existing.id}
-        update_obj = token.model_dump(exclude={"_id", "created_at"}, by_alias=True)
+        update_obj = token.model_dump(exclude={"id", "created_at"}, by_alias=True)
+
+        pprint(update_obj)
 
         await self._repository.update(query=query_obj, update=update_obj)
 

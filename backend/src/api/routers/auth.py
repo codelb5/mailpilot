@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import RedirectResponse
+import traceback
 
 from src.api.dependencies import (
     get_google_oauth,
@@ -82,6 +83,8 @@ async def callback(
 
     except Exception as ex:
 
+        # traceback.print_exc()
+        # raise
         raise HTTPException(
             status_code=400,
             detail=str(ex),
